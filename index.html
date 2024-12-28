@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コメント爆発ゲーム</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+            font-family: Arial, sans-serif;
+            transition: background 1s;
+        }
+
+        #container {
+            text-align: center;
+            position: relative;
+        }
+
+        #letter {
+            width: 80%;
+            max-width: 400px;
+            height: 50%;
+            max-height: 300px;
+            background: #fff;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #explode-btn {
+            margin-top: 20px;
+            display: none;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #explode-btn:hover {
+            background-color: darkred;
+        }
+
+        #input-area {
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 90%;
+            height: 30%;
+            max-height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .explosion {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, yellow, orange, red, black);
+            border-radius: 50%;
+            animation: explode 0.8s forwards;
+            opacity: 0.9;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(5);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(20);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #letter {
+                width: 90%;
+                height: auto;
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            textarea {
+                width: 90%;
+                height: 120px;
+            }
+
+            button {
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="letter">
+            <p id="comment-display" style="word-break: break-word;"></p>
+        </div>
+        <button id="explode-btn">爆破</button>
+        <div id="input-area">
+            <textarea id="comment-input" placeholder="コメントを書いてください"></textarea><br>
+            <button id="display-btn">決定</button>
+        </div>
+    </div>
+
+    <audio id="explosion-sound" src="bom.mp3"></audio>
+
+    <script>
+        document.getElementById('display-btn').addEventListener('click', function() {
+            const commentInput = document.getElementById('comment-input');
+            const commentDisplay = document.getElementById('comment-display');
+            const letter = document.getElementById('letter');
+            const explodeBtn = document.getElementById('explode-btn');
+            const inputArea = document.getElementById('input-area');
+
+            // コメントを手紙に表示
+            const comment = commentInput.value;
+            if (comment.trim() !== "") {
+                commentDisplay.textContent = comment;
+                letter.style.display = 'flex';
+                explodeBtn.style.display = 'block';
+                inputArea.style.display = 'none'; // 入力欄とボタンを非表示
+            }
+        });
+
+        document.getElementById('explode-btn').addEventListener('click', function() {
+            const letter = document.getElementById('letter');
+            const explodeBtn = document.getElementById('explode-btn');
+            const explosionSound = document.getElementById('explosion-sound');
+
+            setTimeout(() => {
+                // 爆発エフェクト
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                document.body.appendChild(explosion);
+
+                // 爆発音を再生
+                explosionSound.play();
+
+                // コメント、手紙、爆破ボタンを非表示
+                setTimeout(() => {
+                    letter.style.display = 'none';
+                    explodeBtn.style.display = 'none';
+                }, 400); // 爆発が広がったタイミングで非表示
+
+                // 背景をランダムに選択
+                const backgrounds = [
+                    'back1.png',
+                    'back2.png',
+                    'back3.png',
+                    'back4.png',
+                    'back5.png',
+                    'back6.png'
+                ];
+                const randomBackground = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                document.body.style.background = `url("${randomBackground}") no-repeat center center fixed`;
+                document.body.style.backgroundSize = 'cover';
+
+                // 爆発後にメッセージ表示
+                setTimeout(() => {
+                    const messages = [
+                        'ゆっくり深呼吸・・・',
+                        '人は思い出を忘れることで生きていける。',
+                        'パフェ食べよう。',
+                        '寝れば大抵のことは忘れる。',
+                        'たぁぁぁまやぁぁぁ～～～!!!',
+                        '明日はもっといい日になりますように!!!',
+                        'スッキリしたようでござるな。ドヒューン!',
+                        'ぽぽぽーん！'
+                    ];
+                    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+                    const overlayText = document.createElement('div');
+                    overlayText.className = 'overlay-text';
+                    overlayText.textContent = randomMessage;
+                    document.body.appendChild(overlayText);
+                }, 2000);
+
+                // エフェクトを消去
+                setTimeout(() => {
+                    explosion.remove();
+                }, 800);
+            }, 500); // 0.5秒後に発生
+        });
+    </script>
+</body>
+</html>
